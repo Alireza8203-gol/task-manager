@@ -1,4 +1,8 @@
 <template>
-  <Header />
-  <MainContainer />
+  <Header/>
+  <MainContainer/>
 </template>
+
+<script setup>
+
+</script>
