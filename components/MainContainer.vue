@@ -57,18 +57,38 @@ import { Icon } from "@iconify/vue";
 import initDB from "~/composables/initDB.js";
 import deleteDatabase from "~/composables/deleteDatabase.js";
 
+const db = ref(null);
 const state = reactive({
   taskData: {
     title: "",
-    date: "",
+    status: "pending",
+    createdAt: "",
   },
 });
 
-const submitTask = () => {
-  initDB();
+const submitTask = async () => {
+  const date = new Date();
+  state.taskData.createdAt = `${date.getHours()}:${date.getMinutes()} - ${
+    date.getMonth() + 1
+  }/${date.getDay()}/${date.getFullYear()}`;
+
+  try {
+    state.taskData.title && (await addTask(db.value, state.taskData));
+    state.taskData.title = "";
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 const submitDelete = () => {
   deleteDatabase();
 };
+
+onMounted(async () => {
+  try {
+    db.value = await initDB();
+  } catch (e) {
+    console.log(e);
+  }
+});
 </script>
