@@ -1,4 +1,4 @@
-import initDB from "./initDB";
+import initDB from "./initDB.js";
 
 const deleteTask = async (id) => {
   const db = await initDB();

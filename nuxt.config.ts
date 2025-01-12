@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: "2024-11-01",
-  devtools: {enabled: false},
+  devtools: { enabled: false },
   modules: ["@nuxtjs/tailwindcss"],
   tailwindcss: {
     config: {
@@ -15,10 +15,11 @@ export default defineNuxtConfig({
           },
           backgroundImage: {
             "radial-amber-400":
-                "radial-gradient(circle, rgba(251,191,36,0.6699054621848739) 0%, rgba(251,191,36,0) 100%)",
+              "radial-gradient(circle, rgba(251,191,36,0.6699054621848739) 0%, rgba(251,191,36,0) 100%)",
           },
           boxShadow: {
             golden: "inset 0px 0px 20px 0px #fbbf24",
+            "golden-outer": "0px 0px 20px 0px #fbbf24",
             emerald: "inset 0px 0px 20px 0px #4ade80",
             ruby: "inset 0px 0px 20px 0px #f87171",
           },
