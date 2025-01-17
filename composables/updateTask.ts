@@ -1,15 +1,18 @@
-import initDB from "./initDB";
+// interface Task {
+//   id?: number;
+//   title: string;
+//   status: string;
+// }
 
-const updateTask = async (task) => {
-  const db = await initDB();
+const updateTask = async (db: IDBDatabase, task: Task) => {
+  const transaction = db.transaction("tasks", "readwrite");
+  const store = transaction.objectStore("tasks");
+  const request = store.put(task);
+
   return new Promise((resolve, reject) => {
-    const transaction = db.transaction("tasks", "readwrite");
-    const store = transaction.objectStore("tasks");
-    const request = store.put(task);
-
     request.onsuccess = () => resolve("Task updated successfully");
-    request.onerror = (event) =>
-      reject(`Update task failed: ${event.target.errorCode}`);
+    request.onerror = (event: Event) =>
+      reject(`Update task failed: ${(event.target as IDBRequest).error}`);
   });
 };
 

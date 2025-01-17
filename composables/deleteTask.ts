@@ -1,7 +1,4 @@
-import initDB from "./initDB.js";
-
-const deleteTask = async (id) => {
-  const db = await initDB();
+const deleteTask = async (db: IDBDatabase, id: number | string) => {
   return new Promise((resolve, reject) => {
     const transaction = db.transaction("tasks", "readwrite");
     const store = transaction.objectStore("tasks");
@@ -9,7 +6,7 @@ const deleteTask = async (id) => {
 
     request.onsuccess = () => resolve("Task deleted successfully");
     request.onerror = (event) =>
-      reject(`Delete task failed: ${event.target.errorCode}`);
+      reject(`Delete task failed: ${(event.target as IDBRequest).error}`);
   });
 };
 

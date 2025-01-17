@@ -27,7 +27,7 @@ interface Props {
   task: Task;
 }
 
-const props: Props = defineProps({
+const props = defineProps({
   task: {
     type: Object,
     required: true,
@@ -37,5 +37,5 @@ const props: Props = defineProps({
       createdAt: "createdAt",
     },
   },
-});
+}) as Props;
 </script>

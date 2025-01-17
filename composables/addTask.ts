@@ -1,8 +1,8 @@
-interface Task {
-  id?: number;
-  title: string;
-  status: string;
-}
+// interface Task {
+//   id?: number;
+//   title: string;
+//   status: string;
+// }
 
 const addTask = async (db: IDBDatabase, task: Task) => {
   const transaction = db.transaction("Tasks", "readwrite");

@@ -61,8 +61,9 @@
 <script setup lang="ts">
 import { Icon } from "@iconify/vue";
 import initDB from "~/composables/initDB";
-import deleteDatabase from "~/composables/deleteDatabase";
+import { onMounted, reactive, ref } from "vue";
 import getAllTasks from "~/composables/getAllTasks";
+import deleteDatabase from "~/composables/deleteDatabase";
 
 interface Task {
   id?: number;
@@ -87,7 +88,7 @@ const state: state = reactive({
   fetchedTasks: [],
 });
 
-const submitTask = async (): void => {
+const submitTask = async (): Promise<void> => {
   const date: Date = new Date();
   state.taskData.createdAt = `${date.getHours()}:${date.getMinutes()} - ${
     date.getMonth() + 1
@@ -109,7 +110,7 @@ const submitDelete = (): void => {
   deleteDatabase();
 };
 
-onMounted(async (): void => {
+onMounted(async (): Promise<void> => {
   try {
     db.value = await initDB();
     state.fetchedTasks = (await getAllTasks(db.value)) as Task[];

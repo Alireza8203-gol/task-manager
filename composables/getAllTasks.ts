@@ -1,8 +1,8 @@
-interface Task {
-  id?: number;
-  title: string;
-  status: string;
-}
+// interface Task {
+//   id?: number;
+//   title: string;
+//   status: string;
+// }
 
 const getAllTasks = async (db: IDBDatabase): Promise<unknown> => {
   return new Promise((resolve, reject) => {
