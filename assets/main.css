@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind utilities;
+@tailwind components;
+
+@layer components {
+  .btn {
+    @apply flex items-center justify-center bg-white/20 backdrop-blur-lg border border-white/30 text-white transition hover:scale-120;
+  }
+
+  .btn-md {
+    @apply p-2;
+  }
+
+  .btn-lg {
+    @apply p-4;
+  }
+
+  .btn-circle {
+    @apply rounded-full;
+  }
+
+  .btn-square {
+    @apply rounded-md;
+  }
+}

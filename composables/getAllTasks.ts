@@ -1,8 +1,4 @@
-// interface Task {
-//   id?: number;
-//   title: string;
-//   status: string;
-// }
+import type { Task } from "~/types/global";
 
 const getAllTasks = async (db: IDBDatabase): Promise<unknown> => {
   return new Promise((resolve, reject) => {

@@ -1,8 +1,4 @@
-// interface Task {
-//   id?: number;
-//   title: string;
-//   status: string;
-// }
+import type { Task } from "~/types/global";
 
 const addTask = async (db: IDBDatabase, task: Task) => {
   const transaction = db.transaction("Tasks", "readwrite");

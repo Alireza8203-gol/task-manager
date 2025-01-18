@@ -2,8 +2,16 @@
   // https://nuxt.com/docs/guide/concepts/typescript
   "extends": "./.nuxt/tsconfig.json",
   "compilerOptions": {
-    "types": [], // Ensure no conflicts, optional
-    "typeRoots": ["./node_modules/@types", "./src/types"]
+    "types": [],
+    // "typeRoots": ["./node_modules/@types", "./src/types"], // default
+    // Ensure no conflicts, optional
+    "typeRoots": [
+      "./node_modules/@types",
+      "./types"
+    ]
   },
-  "include": ["src/**/*", "src/types/global.d.ts"]
+//  "include": [
+//    "./types/global.d.ts"
+//  ]
 }
+

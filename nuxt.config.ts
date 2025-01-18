@@ -1,8 +1,18 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  app: {
+    head: {
+      title: "Task Manager 9000",
+    },
+  },
   compatibilityDate: "2024-11-01",
   devtools: { enabled: false },
-  modules: ["@nuxtjs/tailwindcss"],
+  modules: ["@nuxtjs/tailwindcss", "@nuxtjs/color-mode"],
+  colorMode: {
+    classSuffix: "",
+    preference: "dark",
+    fallback: "light",
+  },
+  css: ["~/assets/main.css"],
   tailwindcss: {
     config: {
       theme: {
@@ -18,10 +28,12 @@ export default defineNuxtConfig({
               "radial-gradient(circle, rgba(251,191,36,0.6699054621848739) 0%, rgba(251,191,36,0) 100%)",
           },
           boxShadow: {
-            golden: "inset 0px 0px 20px 0px #fbbf24",
-            "golden-outer": "0px 0px 20px 0px #fbbf24",
-            emerald: "inset 0px 0px 20px 0px #4ade80",
-            ruby: "inset 0px 0px 20px 0px #f87171",
+            "sm-middle": "0px 0px 3px 0px rgb(0 0 0 / 0.05)",
+            "md-middle": "0px 0px 7px 0px rgb(0 0 0 / 0.05)",
+            "lg-middle": "0px 0px 10px 0px rgb(0 0 0 / 0.05)",
+            "2xl-middle": "0px 0px 15px 0px rgb(0 0 0 / 0.05)",
+            "3xl-middle": "0px 0px 20px 0px rgb(0 0 0 / 0.05)",
+            "3xl-inner": "inset 0px 0px 20px 0px rgb(0 0 0 / 0.05)",
           },
         },
         container: {
