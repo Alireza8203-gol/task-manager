@@ -12,14 +12,15 @@
           type="checkbox"
           name="task_done"
           class="peer hidden"
-          v-model="props.task.status"
+          :checked="isChecked"
+          @change="toggleStatus"
         />
         <Icon
           icon="heroicons-outline:check"
           class="opacity-0 text-white peer-checked:opacity-100"
         />
       </label>
-      <span class="col-span-3 text-white peer-checked:line-through">
+      <span class="col-span-3 text-white">
         {{ task.title }}
       </span>
     </div>
@@ -49,6 +50,7 @@
 </template>
 
 <script lang="ts" setup>
+import { computed } from "vue";
 import { Icon } from "@iconify/vue";
 import type { Task } from "~/types/global";
 
@@ -56,6 +58,9 @@ interface Props {
   task: Task;
 }
 
+const emit = defineEmits<{
+  (event: "updateTask", updatedTask: Task): void;
+}>();
 const props = defineProps({
   task: {
     type: Object,
@@ -67,4 +72,13 @@ const props = defineProps({
     },
   },
 }) as Props;
+
+const isChecked = computed<boolean>(() => props.task.status === "done");
+
+const toggleStatus = (event: Event) => {
+  emit("updateTask", {
+    ...props.task,
+    status: (event.target as HTMLInputElement).checked ? "done" : "pending",
+  });
+};
 </script>

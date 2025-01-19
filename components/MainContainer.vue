@@ -40,8 +40,8 @@
                 />
               </button>
               <button
-                class="btn btn-circle btn-lg hover:shadow-emerald"
                 @click="submitTask"
+                class="btn btn-circle btn-lg hover:shadow-emerald"
               >
                 <Icon
                   icon="heroicons-outline:plus"
@@ -52,24 +52,16 @@
             </div>
           </div>
         </div>
-        <div
+        <draggable
+          item-key="id"
+          v-bind="dragOptions"
+          v-model="state.fetchedTasks"
           class="grid grid-cols-1 items-center gap-y-5 justify-between gap-x-3 p-5 bg-zinc-900 rounded-md"
         >
-          <draggable
-            :list="state.fetchedTasks"
-            item-key="id"
-            :component-data="{ name: 'fade' }"
-            :animation="200"
-          >
-            <template #item="{ element }">
-              <task-card
-                :task="element"
-                :key="element.id"
-                class="transition-transform duration-200 ease-in-out"
-              />
-            </template>
-          </draggable>
-        </div>
+          <template #item="{ element }">
+            <task-card :task="element" @update-task="putUpdatedTask" />
+          </template>
+        </draggable>
       </div>
     </div>
   </main>
@@ -77,11 +69,11 @@
 
 <script lang="ts" setup>
 import { Icon } from "@iconify/vue";
-import draggable from "vuedraggable";
 import initDB from "~/composables/initDB";
 import type { Task } from "~/types/global";
-// import { onMounted, reactive, ref } from "vue";
+import updateTask from "~/composables/updateTask";
 import getAllTasks from "~/composables/getAllTasks";
+import draggable from "vuedraggable/src/vuedraggable";
 import deleteDatabase from "~/composables/deleteDatabase";
 
 interface state {
@@ -94,11 +86,18 @@ const db = ref<IDBDatabase | null>(null);
 const state: state = reactive({
   taskData: {
     title: "",
-    status: "pending",
     createdAt: "",
+    status: "pending",
   },
   fetchedTasks: [],
 });
+
+const dragOptions = computed(() => ({
+  animation: 200,
+  disabled: false,
+  ghostClass: "ghost",
+  dragClass: "my-drag-class",
+}));
 
 const submitTask = async (): Promise<void> => {
   const date: Date = new Date();
@@ -122,6 +121,15 @@ const submitDelete = (): void => {
   deleteDatabase();
 };
 
+const putUpdatedTask = async (task: Task): Promise<void> => {
+  try {
+    const result = await updateTask(db.value as IDBDatabase, task);
+    console.log(result);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 onMounted(async (): Promise<void> => {
   try {
     db.value = await initDB();
@@ -133,4 +141,13 @@ onMounted(async (): Promise<void> => {
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.ghost {
+  @apply opacity-40;
+}
+
+.my-drag-class {
+  opacity: 0 !important;
+  cursor: move !important;
+}
+</style>
