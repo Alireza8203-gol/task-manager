@@ -1,7 +1,7 @@
 const deleteTask = async (db: IDBDatabase, id: number | string) => {
   return new Promise((resolve, reject) => {
-    const transaction = db.transaction("tasks", "readwrite");
-    const store = transaction.objectStore("tasks");
+    const transaction = db.transaction("Tasks", "readwrite");
+    const store = transaction.objectStore("Tasks");
     const request = store.delete(id);
 
     request.onsuccess = () => resolve("Task deleted successfully");

@@ -20,6 +20,7 @@
           >
             <div class="col-span-4">
               <input
+                draggable="true"
                 type="text"
                 id="taskTitle"
                 name="taskTitle"
@@ -30,23 +31,21 @@
             </div>
             <div class="col-span-1 flex justify-end items-center gap-x-4">
               <button
-                class="btn btn-circle btn-lg hover:shadow-ruby"
                 @click="submitDelete"
+                class="btn btn-circle btn-lg shadow-3xl-inner hover:shadow-red-400"
               >
                 <Icon
                   class="size-6 text-red-400"
                   icon="heroicons-outline:trash"
-                  hover-effect-color="hover:shadow-ruby"
                 />
               </button>
               <button
                 @click="submitTask"
-                class="btn btn-circle btn-lg hover:shadow-emerald"
+                class="btn btn-circle btn-lg shadow-3xl-inner hover:shadow-green-400"
               >
                 <Icon
                   icon="heroicons-outline:plus"
                   class="size-6 text-green-400"
-                  hover-effect-color="hover:shadow-emerald"
                 />
               </button>
             </div>
@@ -56,10 +55,16 @@
           item-key="id"
           v-bind="dragOptions"
           v-model="state.fetchedTasks"
+          @end="dragEnd"
           class="grid grid-cols-1 items-center gap-y-5 justify-between gap-x-3 p-5 bg-zinc-900 rounded-md"
         >
           <template #item="{ element }">
-            <task-card :task="element" @update-task="putUpdatedTask" />
+            <task-card
+              :DB="db"
+              :task="element"
+              @rerender-tasks="rerender"
+              @update-task="putUpdatedTask"
+            />
           </template>
         </draggable>
       </div>
@@ -79,7 +84,7 @@ import deleteDatabase from "~/composables/deleteDatabase";
 interface state {
   taskData: Task;
   loading?: boolean;
-  fetchedTasks: [] | Task[];
+  fetchedTasks: Task[];
 }
 
 const db = ref<IDBDatabase | null>(null);
@@ -124,9 +129,31 @@ const submitDelete = (): void => {
 const putUpdatedTask = async (task: Task): Promise<void> => {
   try {
     const result = await updateTask(db.value as IDBDatabase, task);
-    console.log(result);
   } catch (err) {
     console.error(err);
+  }
+};
+
+const rerender = async (rerenderTasks: boolean): Promise<void> => {
+  try {
+    state.fetchedTasks = (await getAllTasks(db.value)) as Task[];
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const dragEnd = async () => {
+  for (const task of state.fetchedTasks) {
+    const copiedTask = { ...task };
+    try {
+      const result = await updateTask(
+        db.value as IDBDatabase,
+        copiedTask as Task,
+      );
+      console.log(result);
+    } catch (err) {
+      console.error(err);
+    }
   }
 };
 
@@ -134,7 +161,6 @@ onMounted(async (): Promise<void> => {
   try {
     db.value = await initDB();
     state.fetchedTasks = (await getAllTasks(db.value)) as Task[];
-    console.log(state.fetchedTasks);
   } catch (e) {
     console.log(e);
   }
@@ -143,11 +169,6 @@ onMounted(async (): Promise<void> => {
 
 <style scoped>
 .ghost {
-  @apply opacity-40;
-}
-
-.my-drag-class {
-  opacity: 0 !important;
-  cursor: move !important;
+  @apply opacity-0;
 }
 </style>

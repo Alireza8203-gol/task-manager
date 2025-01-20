@@ -4,7 +4,7 @@
 
 @layer components {
   .btn {
-    @apply flex items-center justify-center bg-white/20 backdrop-blur-lg border border-white/30 text-white transition hover:scale-120;
+    @apply flex items-center justify-center bg-white/10 backdrop-blur-lg border border-white/30 text-white transition hover:scale-120;
   }
 
   .btn-md {
@@ -21,5 +21,17 @@
 
   .btn-square {
     @apply rounded-md;
+  }
+
+  .btn-disabled {
+    @apply cursor-not-allowed !shadow-none hover:shadow-none !scale-0;
+  }
+
+  .btn-disabled > svg {
+    @apply fill-current text-zinc-400;
+  }
+
+  .done {
+    @apply line-through text-zinc-400;
   }
 }

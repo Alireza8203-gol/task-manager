@@ -1,6 +1,9 @@
 <template>
   <div
-    class="flex items-center justify-between gap-x-3 w-full p-5 bg-zinc-700 rounded-md"
+    :class="[
+      'flex items-center justify-between gap-x-3 w-full p-5 rounded-md',
+      { 'bg-zinc-700': !isDone, 'bg-zinc-800': isDone },
+    ]"
   >
     <div class="flex items-center gap-x-3">
       <label
@@ -20,30 +23,32 @@
           class="opacity-0 text-white peer-checked:opacity-100"
         />
       </label>
-      <span class="col-span-3 text-white">
+      <span :class="['col-span-3 text-white', { done: isDone }]">
         {{ task.title }}
       </span>
     </div>
     <div class="flex items-center gap-x-3">
       <button
         type="button"
-        class="btn btn-md btn-square shadow-md-middle hover:shadow-amber-400"
+        :class="[
+          'btn btn-md btn-square shadow-md-middle hover:shadow-amber-400',
+          { 'btn-disabled': isDone },
+        ]"
       >
         <Icon
           class="size-4 text-amber-400"
           icon="heroicons-outline:calendar-days"
-          hover-effect-color="hover:shadow-emerald"
         />
       </button>
       <button
         type="button"
-        class="btn btn-md btn-square shadow-md-middle hover:shadow-red-400"
+        @click="removeTask"
+        :class="[
+          'btn btn-md btn-square shadow-md-middle hover:shadow-red-400',
+          { '!bg-white/0': isDone },
+        ]"
       >
-        <Icon
-          class="size-4 text-red-400"
-          icon="heroicons-outline:trash"
-          hover-effect-color="hover:shadow-emerald"
-        />
+        <Icon class="size-4 text-red-400" icon="heroicons-outline:trash" />
       </button>
     </div>
   </div>
@@ -56,10 +61,12 @@ import type { Task } from "~/types/global";
 
 interface Props {
   task: Task;
+  DB: IDBDatabase;
 }
 
 const emit = defineEmits<{
   (event: "updateTask", updatedTask: Task): void;
+  (event: "rerenderTasks", rerenderTasks: boolean): void;
 }>();
 const props = defineProps({
   task: {
@@ -71,8 +78,12 @@ const props = defineProps({
       createdAt: "createdAt",
     },
   },
+  DB: {
+    required: true,
+  },
 }) as Props;
 
+const isDone: Ref<boolean> = ref(props.task.status === "done");
 const isChecked = computed<boolean>(() => props.task.status === "done");
 
 const toggleStatus = (event: Event) => {
@@ -80,5 +91,16 @@ const toggleStatus = (event: Event) => {
     ...props.task,
     status: (event.target as HTMLInputElement).checked ? "done" : "pending",
   });
+  isDone.value = !isDone.value;
+};
+
+const removeTask = async (): Promise<void> => {
+  try {
+    const res = await deleteTask(props.DB, props.task.id as number);
+    console.log(res);
+    emit("rerenderTasks", true);
+  } catch (err) {
+    console.error(err);
+  }
 };
 </script>
