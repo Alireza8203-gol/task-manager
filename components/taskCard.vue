@@ -2,13 +2,16 @@
   <div
     :class="[
       'flex items-center justify-between gap-x-3 w-full p-5 rounded-md',
-      { 'bg-zinc-700': !isDone, 'bg-zinc-800': isDone },
+      {
+        'bg-stone-300 dark:bg-zinc-700': !isDone,
+        'bg-stone-300/50 dark:bg-zinc-800': isDone,
+      },
     ]"
   >
     <div class="flex items-center gap-x-3">
       <label
         :for="task.id"
-        class="flex items-center justify-center size-5 rounded-sm bg-zinc-800 peer-checked:bg-amber-400 shadow-lg-middle hover:shadow-amber-400 hover:cursor-pointer transition"
+        class="flex items-center justify-center size-5 rounded-sm bg-zinc-500 dark:bg-zinc-800 shadow-sm-middle dark:shadow-lg-middle dark:hover:shadow-amber-400 hover:cursor-pointer transition"
       >
         <input
           :id="task.id"
@@ -20,10 +23,15 @@
         />
         <Icon
           icon="heroicons-outline:check"
-          class="opacity-0 text-white peer-checked:opacity-100"
+          class="opacity-0 peer-checked:opacity-100 peer-checked:text-white"
         />
       </label>
-      <span :class="['col-span-3 text-white', { done: isDone }]">
+      <span
+        :class="[
+          'col-span-3 text-zinc-800 dark:text-white line-clamp-1',
+          { done: isDone },
+        ]"
+      >
         {{ task.title }}
       </span>
     </div>
@@ -31,12 +39,12 @@
       <button
         type="button"
         :class="[
-          'btn btn-md btn-square shadow-md-middle hover:shadow-amber-400',
+          'btn btn-md btn-square shadow-sm-middle dark:shadow-md-middle hover:shadow-zinc-900 dark:hover:shadow-amber-400',
           { 'btn-disabled': isDone },
         ]"
       >
         <Icon
-          class="size-4 text-amber-400"
+          class="size-4 text-amber-600 dark:text-amber-400"
           icon="heroicons-outline:calendar-days"
         />
       </button>
@@ -44,7 +52,7 @@
         type="button"
         @click="removeTask"
         :class="[
-          'btn btn-md btn-square shadow-md-middle hover:shadow-red-400',
+          'btn btn-md btn-square shadow-sm-middle dark:shadow-md-middle hover:shadow-zinc-900 dark:hover:shadow-red-400',
           { '!bg-white/0': isDone },
         ]"
       >

@@ -2,6 +2,9 @@ export default defineNuxtConfig({
   app: {
     head: {
       title: "Task Manager 9000",
+      bodyAttrs: {
+        class: "body-styles",
+      },
     },
   },
   compatibilityDate: "2024-11-01",
