@@ -46,7 +46,11 @@
     -ms-overflow-style: none; /* Internet Explorer 10+ */
   }
 
-  /*body:where([class~="dark"], [class~="dark"] *) {*/
-  /*  background-color: #18181b;*/
-  /*}*/
+  .ghost {
+    @apply opacity-0;
+  }
+
+  .my-nested-class {
+    @apply ml-5;
+  }
 }

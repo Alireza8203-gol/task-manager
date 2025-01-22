@@ -5,7 +5,10 @@ const initDB = (): Promise<IDBDatabase> => {
     openRequest.onupgradeneeded = (event: IDBVersionChangeEvent) => {
       const db = (event.target as IDBOpenDBRequest).result;
       if (!db.objectStoreNames.contains("Tasks")) {
-        db.createObjectStore("Tasks", { keyPath: "id", autoIncrement: true });
+        db.createObjectStore("Tasks", {
+          keyPath: "order",
+          // autoIncrement: true,
+        });
       }
     };
 

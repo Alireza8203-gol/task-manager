@@ -3,7 +3,7 @@
     class="bg-stone-200 dark:bg-zinc-900 flex items-center justify-center h-[80vh]"
   >
     <div class="container">
-      <div class="bg-stone-300 dark:bg-zinc-800 rounded-lg p-4">
+      <div class="bg-stone-300 dark:bg-zinc-800 rounded-lg p-4 shadow-xl">
         <!-- Title -->
         <h1
           class="mb-4 text-3xl text-zinc-800 dark:text-white font-bold text-center"
@@ -28,7 +28,7 @@
                 @keydown="sbmtTskByEnter"
                 v-model="state.taskData.title"
                 placeholder="Enter your task ..."
-                class="w-full p-3 rounded-md border dark:border-zinc-700 bg-stone-200 dark:bg-zinc-600 text-white focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-opacity-50"
+                class="w-full p-3 rounded-md border dark:border-zinc-700 bg-stone-200 dark:bg-zinc-600 text-zinc-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-opacity-50"
               />
             </div>
             <div
@@ -55,7 +55,7 @@
             </div>
           </div>
         </div>
-        <draggable
+        <vue-draggable
           item-key="id"
           @end="dragEnd"
           v-bind="dragOptions"
@@ -70,7 +70,7 @@
               @update-task="putUpdatedTask"
             />
           </template>
-        </draggable>
+        </vue-draggable>
       </div>
     </div>
   </main>
@@ -82,7 +82,7 @@ import initDB from "~/composables/initDB";
 import type { Task } from "~/types/global";
 import updateTask from "~/composables/updateTask";
 import getAllTasks from "~/composables/getAllTasks";
-import draggable from "vuedraggable/src/vuedraggable";
+import vueDraggable from "vuedraggable/src/vuedraggable";
 import deleteDatabase from "~/composables/deleteDatabase";
 
 interface state {
@@ -94,20 +94,24 @@ interface state {
 const db = ref<IDBDatabase | null>(null);
 const state: state = reactive({
   taskData: {
+    id: "",
     title: "",
     createdAt: "",
+    // submitTask: [],
     status: "pending",
   },
   fetchedTasks: [],
 });
 
 const dragOptions = computed(() => ({
+  delay: 200,
   animation: 200,
   disabled: false,
   ghostClass: "ghost",
-  dragClass: "my-drag-class",
-  delay: 200,
+  // nestedDraggable: true,
   delayOnTouchOnly: true,
+  dragClass: "my-drag-class",
+  nestedClass: "my-nested-class",
 }));
 
 const submitTask = async (): Promise<void> => {
@@ -115,6 +119,8 @@ const submitTask = async (): Promise<void> => {
   state.taskData.createdAt = `${date.getHours()}:${date.getMinutes()} - ${
     date.getMonth() + 1
   }/${date.getDay()}/${date.getFullYear()}`;
+  state.taskData.id = crypto.randomUUID();
+  state.taskData.order = state.fetchedTasks.length + 1;
   if (state.taskData.title && db.value) {
     try {
       state.taskData.title && (await addTask(db.value, state.taskData));
@@ -153,15 +159,16 @@ const putUpdatedTask = async (task: Task): Promise<void> => {
 
 const rerender = async (): Promise<void> => {
   try {
-    state.fetchedTasks = (await getAllTasks(db.value)) as Task[];
+    state.fetchedTasks = (await getAllTasks(db.value as IDBDatabase)) as Task[];
   } catch (error) {
     console.error(error);
   }
 };
 
 const dragEnd = async () => {
-  for (const task of state.fetchedTasks) {
-    const copiedTask = { ...task };
+  for (let i = 0; i < state.fetchedTasks.length; i++) {
+    const task = state.fetchedTasks[i];
+    const copiedTask = { ...task, order: i + 1 };
     try {
       const result = await updateTask(
         db.value as IDBDatabase,
@@ -184,8 +191,4 @@ onMounted(async (): Promise<void> => {
 });
 </script>
 
-<style scoped>
-.ghost {
-  @apply opacity-0;
-}
-</style>
+<style scoped></style>

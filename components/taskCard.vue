@@ -104,7 +104,7 @@ const toggleStatus = (event: Event) => {
 
 const removeTask = async (): Promise<void> => {
   try {
-    const res = await deleteTask(props.DB, props.task.id as number);
+    const res = await deleteTask(props.DB, props.task.order as number);
     console.log(res);
     emit("rerenderTasks", true);
   } catch (err) {
