@@ -1,64 +1,83 @@
 <template>
-  <div
-    :class="[
-      'flex items-center justify-between gap-x-3 w-full p-5 rounded-md',
-      {
-        'bg-stone-300 dark:bg-zinc-700': !isDone,
-        'bg-stone-300/50 dark:bg-zinc-800': isDone,
-      },
-    ]"
-  >
-    <div class="flex items-center gap-x-3">
-      <label
-        :for="task.id"
-        class="flex items-center justify-center size-5 rounded-sm bg-zinc-500 dark:bg-zinc-800 shadow-sm-middle dark:shadow-lg-middle dark:hover:shadow-amber-400 hover:cursor-pointer transition"
-      >
-        <input
-          :id="task.id"
-          type="checkbox"
-          name="task_done"
-          class="peer hidden"
-          :checked="isChecked"
-          @change="toggleStatus"
-        />
-        <Icon
-          icon="heroicons-outline:check"
-          class="opacity-0 peer-checked:opacity-100 peer-checked:text-white"
-        />
-      </label>
-      <span
-        :class="[
-          'col-span-3 text-zinc-800 dark:text-white line-clamp-1',
-          { done: isDone },
-        ]"
-      >
-        {{ task.title }}
-      </span>
+  <div class="'flex flex-col items-end gap-x-3 w-full rounded-md',">
+    <div
+      :class="[
+        'flex items-center justify-between gap-x-3 w-full p-5 rounded-md',
+        {
+          'bg-stone-300 dark:bg-zinc-700': !isDone,
+          'bg-stone-300/50 dark:bg-zinc-800': isDone,
+        },
+      ]"
+    >
+      <div class="flex items-center gap-x-3">
+        <label
+          :for="task.id"
+          class="flex items-center justify-center size-5 rounded-sm bg-zinc-500 dark:bg-zinc-800 shadow-sm-middle dark:shadow-lg-middle dark:hover:shadow-amber-400 hover:cursor-pointer transition"
+        >
+          <input
+            :id="task.id"
+            type="checkbox"
+            name="task_done"
+            class="peer hidden"
+            :checked="isChecked"
+            @change="toggleStatus"
+          />
+          <Icon
+            icon="heroicons-outline:check"
+            class="opacity-0 peer-checked:opacity-100 peer-checked:text-white"
+          />
+        </label>
+        <span
+          :class="[
+            'col-span-3 text-zinc-800 dark:text-white line-clamp-1',
+            { done: isDone },
+          ]"
+        >
+          {{ task.title }}
+        </span>
+      </div>
+      <div class="flex items-center gap-x-3">
+        <button
+          type="button"
+          :class="[
+            'btn btn-md btn-square shadow-sm-middle dark:shadow-md-middle hover:shadow-zinc-900 dark:hover:shadow-amber-400',
+            { 'btn-disabled': isDone },
+          ]"
+        >
+          <Icon
+            icon="heroicons-outline:calendar-days"
+            class="size-4 text-amber-600 dark:text-amber-400"
+          />
+        </button>
+        <button
+          type="button"
+          @click="removeTask"
+          :class="[
+            'btn btn-md btn-square shadow-sm-middle dark:shadow-md-middle hover:shadow-zinc-900 dark:hover:shadow-red-400',
+            { '!bg-white/0': isDone },
+          ]"
+        >
+          <Icon class="size-4 text-red-400" icon="heroicons-outline:trash" />
+        </button>
+      </div>
     </div>
-    <div class="flex items-center gap-x-3">
-      <button
-        type="button"
-        :class="[
-          'btn btn-md btn-square shadow-sm-middle dark:shadow-md-middle hover:shadow-zinc-900 dark:hover:shadow-amber-400',
-          { 'btn-disabled': isDone },
-        ]"
-      >
-        <Icon
-          class="size-4 text-amber-600 dark:text-amber-400"
-          icon="heroicons-outline:calendar-days"
+    <vue-draggable
+      item-key="id"
+      @end="dragEnd"
+      v-bind="dragOptions"
+      v-model="task.subTasks"
+      v-if="props.task.subTasks"
+      class="grid grid-cols-1 items-center gap-y-5 justify-between gap-x-3 max-h-[585px] pt-3 pl-5 bg-stone-200 dark:bg-zinc-900 rounded-md overflow-scroll hide-scrollbar"
+    >
+      <template #item="{ element }">
+        <task-card
+          :DB="db"
+          :task="element"
+          @rerender-tasks="rerender"
+          @update-task="putUpdatedTask"
         />
-      </button>
-      <button
-        type="button"
-        @click="removeTask"
-        :class="[
-          'btn btn-md btn-square shadow-sm-middle dark:shadow-md-middle hover:shadow-zinc-900 dark:hover:shadow-red-400',
-          { '!bg-white/0': isDone },
-        ]"
-      >
-        <Icon class="size-4 text-red-400" icon="heroicons-outline:trash" />
-      </button>
-    </div>
+      </template>
+    </vue-draggable>
   </div>
 </template>
 
@@ -66,10 +85,15 @@
 import { computed } from "vue";
 import { Icon } from "@iconify/vue";
 import type { Task } from "~/types/global";
+import vueDraggable from "vuedraggable/src/vuedraggable";
 
 interface Props {
   task: Task;
   DB: IDBDatabase;
+  dragOptions: Object;
+  endEventHandler: () => void;
+  "rerender-tasks": () => void;
+  "update-task": () => void;
 }
 
 const emit = defineEmits<{
@@ -88,6 +112,22 @@ const props = defineProps({
   },
   DB: {
     required: true,
+  },
+  dragOptions: {
+    type: Object,
+    required: false,
+  },
+  endEventHandler: {
+    type: Function,
+    required: false,
+  },
+  "rerender-tasks": {
+    type: Function,
+    required: false,
+  },
+  "update-task": {
+    type: Function,
+    required: false,
   },
 }) as Props;
 

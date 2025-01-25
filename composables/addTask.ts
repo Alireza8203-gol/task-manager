@@ -1,10 +1,14 @@
+import { toRaw } from "vue";
 import type { Task } from "~/types/global";
 
-const addTask = async (db: IDBDatabase, task: Task) => {
-  const transaction = db.transaction("Tasks", "readwrite");
-  const tasks = transaction.objectStore("Tasks");
+const addTask = async (db: IDBDatabase, task: Task): Promise<void> => {
+  const transaction: IDBTransaction = db.transaction("Tasks", "readwrite");
+  const tasks: IDBObjectStore = transaction.objectStore("Tasks");
+  const subTaskArr = toRaw(task.subTasks);
+  console.log(subTaskArr);
   const plainTask: Task = {
     ...task, // Spread the reactive task data into a new plain object
+    subTasks: toRaw(task.subTasks),
   };
   try {
     tasks.add(plainTask); // Add the task
@@ -14,7 +18,8 @@ const addTask = async (db: IDBDatabase, task: Task) => {
     });
     console.log("Task saved");
   } catch (e) {
-    console.log(
+    console.log(plainTask);
+    console.warn(
       "Failed to add task: " + (e instanceof Error ? e.message : String(e)),
     );
   }

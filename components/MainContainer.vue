@@ -66,7 +66,9 @@
             <task-card
               :DB="db"
               :task="element"
+              :dragOptions="dragOptions"
               @rerender-tasks="rerender"
+              :endEventHandler="dragEnd"
               @update-task="putUpdatedTask"
             />
           </template>
@@ -80,6 +82,7 @@
 import { Icon } from "@iconify/vue";
 import initDB from "~/composables/initDB";
 import type { Task } from "~/types/global";
+import addTask from "~/composables/addTask";
 import updateTask from "~/composables/updateTask";
 import getAllTasks from "~/composables/getAllTasks";
 import vueDraggable from "vuedraggable/src/vuedraggable";
@@ -97,7 +100,30 @@ const state: state = reactive({
     id: "",
     title: "",
     createdAt: "",
-    // submitTask: [],
+    subTasks: [
+      {
+        id: "1",
+        title: "help please",
+        createdAt: "1999",
+        subTasks: [
+          {
+            id: "1",
+            title: "help please",
+            createdAt: "1999",
+            subTasks: [{}],
+            status: "pending",
+          },
+        ],
+        status: "pending",
+      },
+      {
+        id: "1",
+        title: "help please",
+        createdAt: "1999",
+        subTasks: [{}],
+        status: "pending",
+      },
+    ],
     status: "pending",
   },
   fetchedTasks: [],
