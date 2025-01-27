@@ -50,7 +50,7 @@
   }
 
   .ghost {
-    @apply opacity-0;
+    @apply opacity-40;
   }
 
   .my-nested-class {

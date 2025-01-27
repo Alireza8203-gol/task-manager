@@ -55,24 +55,27 @@
             </div>
           </div>
         </div>
-        <vue-draggable
+        <draggable
           item-key="id"
           @end="dragEnd"
           v-bind="dragOptions"
           v-model="state.fetchedTasks"
+          :group="{ name: 'tasks-group' }"
+          @change="onChangeHandler"
           class="grid grid-cols-1 items-center gap-y-5 justify-between gap-x-3 max-h-[585px] p-5 bg-stone-200 dark:bg-zinc-900 rounded-md overflow-scroll hide-scrollbar"
         >
           <template #item="{ element }">
             <task-card
               :DB="db"
               :task="element"
+              :drag-end="dragEnd"
               :dragOptions="dragOptions"
               @rerender-tasks="rerender"
               :endEventHandler="dragEnd"
               @update-task="putUpdatedTask"
             />
           </template>
-        </vue-draggable>
+        </draggable>
       </div>
     </div>
   </main>
@@ -80,50 +83,21 @@
 
 <script lang="ts" setup>
 import { Icon } from "@iconify/vue";
+import draggable from "vuedraggable";
 import initDB from "~/composables/initDB";
-import type { Task } from "~/types/global";
 import addTask from "~/composables/addTask";
+import type { state, Task } from "~/types/global";
 import updateTask from "~/composables/updateTask";
 import getAllTasks from "~/composables/getAllTasks";
-import vueDraggable from "vuedraggable/src/vuedraggable";
 import deleteDatabase from "~/composables/deleteDatabase";
-
-interface state {
-  taskData: Task;
-  loading?: boolean;
-  fetchedTasks: Task[];
-}
 
 const db = ref<IDBDatabase | null>(null);
 const state: state = reactive({
   taskData: {
     id: "",
     title: "",
+    subTasks: [],
     createdAt: "",
-    subTasks: [
-      {
-        id: "1",
-        title: "help please",
-        createdAt: "1999",
-        subTasks: [
-          {
-            id: "1",
-            title: "help please",
-            createdAt: "1999",
-            subTasks: [{}],
-            status: "pending",
-          },
-        ],
-        status: "pending",
-      },
-      {
-        id: "1",
-        title: "help please",
-        createdAt: "1999",
-        subTasks: [{}],
-        status: "pending",
-      },
-    ],
     status: "pending",
   },
   fetchedTasks: [],
@@ -134,7 +108,7 @@ const dragOptions = computed(() => ({
   animation: 200,
   disabled: false,
   ghostClass: "ghost",
-  // nestedDraggable: true,
+  nestedDraggable: true,
   delayOnTouchOnly: true,
   dragClass: "my-drag-class",
   nestedClass: "my-nested-class",
@@ -159,9 +133,7 @@ const submitTask = async (): Promise<void> => {
     console.log("Database hasn't been initialized", db.value);
   }
 };
-
 const sbmtTskByEnter = async (event: Event): Promise<void> => {
-  // console.log(event);
   if (event.key === "Enter") {
     try {
       await submitTask();
@@ -170,19 +142,16 @@ const sbmtTskByEnter = async (event: Event): Promise<void> => {
     }
   }
 };
-
 const submitDelete = (): void => {
   deleteDatabase();
 };
-
 const putUpdatedTask = async (task: Task): Promise<void> => {
   try {
-    const result = await updateTask(db.value as IDBDatabase, task);
+    await updateTask(db.value as IDBDatabase, task);
   } catch (err) {
     console.error(err);
   }
 };
-
 const rerender = async (): Promise<void> => {
   try {
     state.fetchedTasks = (await getAllTasks(db.value as IDBDatabase)) as Task[];
@@ -190,21 +159,23 @@ const rerender = async (): Promise<void> => {
     console.error(error);
   }
 };
-
 const dragEnd = async () => {
   for (let i = 0; i < state.fetchedTasks.length; i++) {
-    const task = state.fetchedTasks[i];
-    const copiedTask = { ...task, order: i + 1 };
+    const task = toRaw(state.fetchedTasks[i]);
+    const reorderedTask = { ...task, order: i + 1 };
     try {
       const result = await updateTask(
         db.value as IDBDatabase,
-        copiedTask as Task,
+        reorderedTask as Task,
       );
       console.log(result);
     } catch (err) {
       console.error(err);
     }
   }
+};
+const onChangeHandler = (event: Event) => {
+  console.log(event);
 };
 
 onMounted(async (): Promise<void> => {
