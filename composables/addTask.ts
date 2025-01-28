@@ -4,8 +4,6 @@ import type { Task } from "~/types/global";
 const addTask = async (db: IDBDatabase, task: Task): Promise<void> => {
   const transaction: IDBTransaction = db.transaction("Tasks", "readwrite");
   const tasks: IDBObjectStore = transaction.objectStore("Tasks");
-  const subTaskArr = toRaw(task.subTasks);
-  console.log(subTaskArr);
   const plainTask: Task = {
     ...task, // Spread the reactive task data into a new plain object
     subTasks: toRaw(task.subTasks),

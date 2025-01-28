@@ -1,5 +1,7 @@
 <template>
-  <div class="'flex flex-col items-end gap-x-3 w-full rounded-md',">
+  <div
+    class="flex flex-col items-end gap-x-3 w-full rounded-md outline outline-1 outline-gray-200"
+  >
     <div
       :class="[
         'flex items-center justify-between gap-x-3 w-full p-5 rounded-md',
@@ -61,20 +63,20 @@
         </button>
       </div>
     </div>
+    <!-- @end="dragEnd" -->
     <draggable
       item-key="id"
-      @end="dragEnd"
       v-bind="dragOptions"
       v-model="task.subTasks"
       @change="onChangeHandler"
       :group="{ name: 'tasks-group' }"
       :class="[
-        'grid grid-cols-1 items-center gap-y-5 justify-between gap-x-3 max-h-[585px]  bg-stone-200 dark:bg-zinc-900 rounded-md overflow-scroll hide-scrollbar',
+        'grid grid-cols-1 items-center gap-y-5 justify-between gap-x-3 max-h-[585px] w-full  bg-stone-200 dark:bg-zinc-900 rounded-md overflow-scroll hide-scrollbar',
         { 'pt-3 pl-5': task.subTasks.length > 0 },
       ]"
     >
       <template #item="{ element }">
-        <task-card :DB="db" :task="element" />
+        <task-card :DB="props.DB" :task="element" />
       </template>
     </draggable>
   </div>
@@ -86,15 +88,12 @@ import { Icon } from "@iconify/vue";
 import draggable from "vuedraggable";
 import type { Task } from "~/types/global";
 import deleteTask from "~/composables/deleteTask";
+import changeEventHandler from "~/composables/changeEventHandler";
 
 interface Props {
   task: Task;
   DB: IDBDatabase;
   dragOptions: Object;
-  endEventHandler: () => void;
-  "rerender-tasks": () => void;
-  "update-task": () => void;
-  dragEnd: () => void;
 }
 
 const emit = defineEmits<{
@@ -116,22 +115,6 @@ const props = defineProps({
   },
   dragOptions: {
     type: Object,
-    required: false,
-  },
-  endEventHandler: {
-    type: Function,
-    required: false,
-  },
-  "rerender-tasks": {
-    type: Function,
-    required: false,
-  },
-  "update-task": {
-    type: Function,
-    required: false,
-  },
-  dragEnd: {
-    type: Function,
     required: false,
   },
 }) as Props;
@@ -157,11 +140,14 @@ const removeTask = async (): Promise<void> => {
 };
 
 // todo: need to add the sub-task's data to the subtasks array of the task prop and then pass is up to the parent to reorder and update all the other tasks.
+// todo: the tasks gets pushed over and over again in an endless loop. need to stop is somehow :/
 const onChangeHandler = (event: Event) => {
-  console.log(event);
-  if (event.added) {
-    const subTaskData = toRaw(event.added.element);
-    props.task.subTasks?.push(subTaskData);
-  }
+  //   props.task.subTasks?.push(subTaskData);
+  changeEventHandler({
+    event: event,
+    dataBase: props.DB,
+    tasksArray: props.task,
+    parentTask: props.task,
+  });
 };
 </script>
