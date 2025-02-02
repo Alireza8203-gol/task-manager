@@ -3,9 +3,6 @@
 @tailwind components;
 
 @layer components {
-  * {
-    /*outline: aqua 1px solid;*/
-  }
   body {
     /*background-color: #f3f4f6;*/
     @apply bg-stone-200 dark:bg-zinc-900;
@@ -50,7 +47,7 @@
   }
 
   .ghost {
-    @apply opacity-40;
+    @apply opacity-40 outline-1 outline-zinc-800 dark:outline-gray-200;
   }
 
   .my-nested-class {

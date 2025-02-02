@@ -4,7 +4,7 @@ interface Task {
   order?: number;
   status: string;
   createdAt: string;
-  subTasks?: Task[];
+  subTasks: Task[] | [];
 }
 interface state {
   taskData: Task;
@@ -12,4 +12,11 @@ interface state {
   fetchedTasks: Task[];
 }
 
-export { Task, state };
+interface passedArguments {
+  event: Event;
+  parentTask?: Task;
+  tasksArray: Task[];
+  dataBase: IDBDatabase;
+}
+
+export { Task, state, passedArguments };

@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="flex flex-col items-end gap-x-3 w-full rounded-md outline outline-1 outline-gray-200"
-  >
+  <div class="flex flex-col items-end gap-x-3 w-full rounded-md">
     <div
       :class="[
         'flex items-center justify-between gap-x-3 w-full p-5 rounded-md',
@@ -64,15 +62,15 @@
       </div>
     </div>
     <!-- @end="dragEnd" -->
+    <!-- @change="onChangeHandler" -->
     <draggable
       item-key="id"
       v-bind="dragOptions"
       v-model="task.subTasks"
-      @change="onChangeHandler"
       :group="{ name: 'tasks-group' }"
       :class="[
         'grid grid-cols-1 items-center gap-y-5 justify-between gap-x-3 max-h-[585px] w-full  bg-stone-200 dark:bg-zinc-900 rounded-md overflow-scroll hide-scrollbar',
-        { 'pt-3 pl-5': task.subTasks.length > 0 },
+        { 'pt-5 pl-5': task.subTasks.length > 0 },
       ]"
     >
       <template #item="{ element }">
@@ -83,12 +81,10 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue";
 import { Icon } from "@iconify/vue";
 import draggable from "vuedraggable";
 import type { Task } from "~/types/global";
 import deleteTask from "~/composables/deleteTask";
-import changeEventHandler from "~/composables/changeEventHandler";
 
 interface Props {
   task: Task;
@@ -119,15 +115,14 @@ const props = defineProps({
   },
 }) as Props;
 
-const isDone: Ref<boolean> = ref(props.task.status === "done");
-const isChecked = computed<boolean>(() => props.task.status === "done");
+const isDone = computed(() => props.task.status === "done");
+const isChecked = computed(() => props.task.status === "done");
 
-const toggleStatus = (event: Event) => {
-  emit("updateTask", {
-    ...props.task,
-    status: (event.target as HTMLInputElement).checked ? "done" : "pending",
-  });
-  isDone.value = !isDone.value;
+const toggleStatus = () => {
+  props.task.status = props.task.status === "done" ? "pending" : "done";
+  // props.task.subTasks = props.task.subTasks?.map((subTask: Task) => {
+  //   return subTask.status === "done" ? "pending" : "done";
+  // });
 };
 const removeTask = async (): Promise<void> => {
   try {
@@ -137,17 +132,5 @@ const removeTask = async (): Promise<void> => {
   } catch (err) {
     console.error(err);
   }
-};
-
-// todo: need to add the sub-task's data to the subtasks array of the task prop and then pass is up to the parent to reorder and update all the other tasks.
-// todo: the tasks gets pushed over and over again in an endless loop. need to stop is somehow :/
-const onChangeHandler = (event: Event) => {
-  //   props.task.subTasks?.push(subTaskData);
-  changeEventHandler({
-    event: event,
-    dataBase: props.DB,
-    tasksArray: props.task,
-    parentTask: props.task,
-  });
 };
 </script>

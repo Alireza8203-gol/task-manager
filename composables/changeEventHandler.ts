@@ -1,21 +1,13 @@
 import { toRaw } from "vue";
-import type { Task } from "~/types/global";
+import type { passedArguments, Task } from "~/types/global";
 import updateTask from "~/composables/updateTask";
 import deleteTask from "~/composables/deleteTask";
-import convertToRawObject from "~/composables/convertToRawObject";
-
-interface passedArguments {
-  event: Event;
-  dataBase: IDBDatabase;
-  tasksArray?: Task[];
-  parentTask?: Task;
-}
 
 const changeEventHandler = async (argObj: passedArguments): Promise<void> => {
   const eventType = Object.keys(argObj.event)[0];
   switch (eventType) {
     case "moved":
-      console.log("event type is moved");
+      // console.log(argObj.event);
       for (let i: number = 0; i < argObj.tasksArray.length; i++) {
         const task: Task = argObj.tasksArray[i];
         const reorderedTask = {
@@ -23,7 +15,6 @@ const changeEventHandler = async (argObj: passedArguments): Promise<void> => {
           order: i + 1,
           subTasks: toRaw(task.subTasks),
         };
-        console.log(reorderedTask);
         try {
           const result = await updateTask(
             argObj.dataBase,
@@ -36,7 +27,7 @@ const changeEventHandler = async (argObj: passedArguments): Promise<void> => {
       }
       break;
     case "removed":
-      console.log("event type is removed");
+      // console.log("event type is removed");
       const removedTask = toRaw(argObj.event.removed.element) as Task;
       console.log(removedTask);
       try {
@@ -49,9 +40,8 @@ const changeEventHandler = async (argObj: passedArguments): Promise<void> => {
       }
       break;
     case "added":
-      console.log("event type is added");
-      const rawParentTask = convertToRawObject(argObj.parentTask);
-      console.log(rawParentTask);
+      // console.log("event type is added");
+
       try {
         await updateTask(argObj.dataBase, rawParentTask);
       } catch (err) {
