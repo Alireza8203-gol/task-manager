@@ -61,8 +61,8 @@
         </button>
       </div>
     </div>
-    <!-- @end="dragEnd" -->
-    <!-- @change="onChangeHandler" -->
+    <!--  @end="dragEnd"  -->
+    <!--  @change="onChangeHandler"  -->
     <draggable
       item-key="id"
       v-bind="dragOptions"

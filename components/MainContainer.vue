@@ -56,10 +56,10 @@
           </div>
         </div>
         <!-- @end="dragEnd" -->
-        <!-- @change="onChangeHandler" -->
         <draggable
           item-key="id"
           v-bind="dragOptions"
+          @change="onChangeHandler"
           v-model="state.fetchedTasks"
           :group="{ name: 'tasks-group' }"
           class="grid grid-cols-1 items-center gap-y-5 justify-between gap-x-3 max-h-[585px] p-5 bg-stone-200 dark:bg-zinc-900 rounded-md overflow-scroll hide-scrollbar"
@@ -80,6 +80,7 @@
 </template>
 
 <script lang="ts" setup>
+import { toRaw } from "vue";
 import { Icon } from "@iconify/vue";
 import draggable from "vuedraggable";
 import initDB from "~/composables/initDB";
@@ -89,6 +90,7 @@ import updateTask from "~/composables/updateTask";
 import getAllTasks from "~/composables/getAllTasks";
 import deleteDatabase from "~/composables/deleteDatabase";
 import convertToRawObject from "~/composables/convertToRawObject";
+import updateTasksLoop from "~/composables/updateTasksLoop";
 
 const db = ref<IDBDatabase | null>(null);
 const state: state = reactive({
@@ -159,6 +161,16 @@ const rerender = async (): Promise<void> => {
     console.error(error);
   }
 };
+const onChangeHandler = async (event: Event): Promise<void> => {
+  if (event.removed) {
+    const removedTask = toRaw(event.removed.element) as Task;
+    console.log("removed task: ", removedTask);
+    state.fetchedTasks = state.fetchedTasks.filter((task) => {
+      return task.id !== removedTask.id;
+    });
+    console.log(state.fetchedTasks);
+  }
+};
 
 onMounted(async (): Promise<void> => {
   try {
@@ -171,26 +183,17 @@ onMounted(async (): Promise<void> => {
 
 watch(
   () => state.fetchedTasks,
-  async () => {
-    for (let i: number = 0; i < state.fetchedTasks.length; i++) {
-      const rawTaskObject = state.fetchedTasks.map((taskObject: Task) => {
-        return convertToRawObject(taskObject);
-      });
-      const task: Task = rawTaskObject[i];
-      const reorderedTask = {
-        ...task,
-        order: i + 1,
-      };
-      try {
-        const result = await updateTask(
-          db.value as IDBDatabase,
-          toRaw(reorderedTask) as Task,
-        );
-        console.log(result);
-      } catch (err) {
-        console.error(err);
-      }
+  async (newVal, oldVal) => {
+    const transaction = db.value?.transaction("Tasks", "readwrite");
+    const store = transaction.objectStore("Tasks");
+    try {
+      await store.clear();
+      await updateTasksLoop(newVal, db.value as IDBDatabase);
+    } catch (err) {
+      console.error(err);
     }
+    console.log("new val: ", newVal);
+    console.log("old val: ", oldVal);
   },
   { deep: true },
 );
