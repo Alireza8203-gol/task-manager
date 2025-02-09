@@ -1,25 +1,28 @@
 <template>
   <header>
     <nav
-      class="flex justify-between items-center gap-x-4 w-full p-4 mb-4 md:mb-0"
+      class="flex justify-between flex-row-reverse items-center gap-x-4 w-full p-4 mb-4 md:mb-0"
     >
-      <button
-        class="btn btn-circle btn-lg shadow-3xl-inner hover:shadow-zinc-900 dark:hover:shadow-amber-400"
-      >
-        <Icon
-          icon="heroicons-outline:bars-3"
-          class="size-6 text-zinc-900 dark:text-white"
-        />
-      </button>
+      <!-- Menu -->
+      <!--      <button-->
+      <!--        class="btn btn-circle btn-lg shadow-3xl-inner hover:shadow-zinc-900 dark:hover:shadow-amber-400"-->
+      <!--      >-->
+      <!--        <Icon-->
+      <!--          icon="heroicons-outline:bars-3"-->
+      <!--          class="size-6 text-zinc-900 dark:text-white"-->
+      <!--        />-->
+      <!--      </button>-->
       <div class="flex items-center gap-x-4">
-        <button
-          class="btn btn-circle btn-lg shadow-3xl-inner hover:shadow-zinc-900 dark:hover:shadow-amber-400"
-        >
-          <Icon
-            icon="heroicons-outline:user"
-            class="size-6 text-zinc-900 dark:text-white"
-          />
-        </button>
+        <!-- User -->
+        <!--        <button-->
+        <!--          class="btn btn-circle btn-lg shadow-3xl-inner hover:shadow-zinc-900 dark:hover:shadow-amber-400"-->
+        <!--        >-->
+        <!--          <Icon-->
+        <!--            icon="heroicons-outline:user"-->
+        <!--            class="size-6 text-zinc-900 dark:text-white"-->
+        <!--          />-->
+        <!--        </button>-->
+        <!-- Theme -->
         <button
           class="btn btn-circle btn-lg shadow-3xl-inner hover:shadow-zinc-900 dark:hover:shadow-amber-400"
           @click="toggleTheme"

@@ -61,29 +61,28 @@
         </button>
       </div>
     </div>
-    <draggable
-      item-key="id"
-      @end="dragEnd"
-      v-bind="dragOptions"
-      v-model="task.subTasks"
-      @change="onChangeHandler"
-      :group="{ name: 'tasks-group' }"
-      :class="[
-        'grid grid-cols-1 items-center gap-y-5 justify-between gap-x-3 max-h-[585px]  bg-stone-200 dark:bg-zinc-900 rounded-md overflow-scroll hide-scrollbar',
-        { 'pt-3 pl-5': task.subTasks.length > 0 },
-      ]"
-    >
-      <template #item="{ element }">
-        <task-card :DB="db" :task="element" />
-      </template>
-    </draggable>
+    <!-- <draggable-->
+    <!--   item-key="id"-->
+    <!--   @end="dragEnd"-->
+    <!--   v-bind="dragOptions"-->
+    <!--   v-model="task.subTasks"-->
+    <!--   @change="onChangeHandler"-->
+    <!--   :group="{ name: 'tasks-group' }"-->
+    <!--   :class="[-->
+    <!--     'grid grid-cols-1 items-center gap-y-5 justify-between gap-x-3 max-h-[585px]  bg-stone-200 dark:bg-zinc-900 rounded-md overflow-scroll hide-scrollbar',-->
+    <!--     { 'pt-3 pl-5': task.subTasks.length > 0 },-->
+    <!--   ]"-->
+    <!-- >-->
+    <!--   <template #item="{ element }">-->
+    <!--     <task-card :DB="db" :task="element" />-->
+    <!--   </template>-->
+    <!-- </draggable>-->
   </div>
 </template>
 
 <script lang="ts" setup>
 import { computed } from "vue";
 import { Icon } from "@iconify/vue";
-import draggable from "vuedraggable";
 import type { Task } from "~/types/global";
 import deleteTask from "~/composables/deleteTask";
 
@@ -114,26 +113,6 @@ const props = defineProps({
   DB: {
     required: true,
   },
-  dragOptions: {
-    type: Object,
-    required: false,
-  },
-  endEventHandler: {
-    type: Function,
-    required: false,
-  },
-  "rerender-tasks": {
-    type: Function,
-    required: false,
-  },
-  "update-task": {
-    type: Function,
-    required: false,
-  },
-  dragEnd: {
-    type: Function,
-    required: false,
-  },
 }) as Props;
 
 const isDone: Ref<boolean> = ref(props.task.status === "done");
@@ -153,15 +132,6 @@ const removeTask = async (): Promise<void> => {
     emit("rerenderTasks", true);
   } catch (err) {
     console.error(err);
-  }
-};
-
-// todo: need to add the sub-task's data to the subtasks array of the task prop and then pass is up to the parent to reorder and update all the other tasks.
-const onChangeHandler = (event: Event) => {
-  console.log(event);
-  if (event.added) {
-    const subTaskData = toRaw(event.added.element);
-    props.task.subTasks?.push(subTaskData);
   }
 };
 </script>

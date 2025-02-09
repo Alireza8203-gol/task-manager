@@ -55,23 +55,23 @@
             </div>
           </div>
         </div>
+        <!--@end="dragEnd"-->
+        <!--@change="onChangeHandler"-->
         <draggable
           item-key="id"
-          @end="dragEnd"
           v-bind="dragOptions"
           v-model="state.fetchedTasks"
           :group="{ name: 'tasks-group' }"
-          @change="onChangeHandler"
           class="grid grid-cols-1 items-center gap-y-5 justify-between gap-x-3 max-h-[585px] p-5 bg-stone-200 dark:bg-zinc-900 rounded-md overflow-scroll hide-scrollbar"
         >
+          <!--:drag-end="dragEnd"-->
+          <!--:endEventHandler="dragEnd"-->
           <template #item="{ element }">
             <task-card
               :DB="db"
               :task="element"
-              :drag-end="dragEnd"
               :dragOptions="dragOptions"
               @rerender-tasks="rerender"
-              :endEventHandler="dragEnd"
               @update-task="putUpdatedTask"
             />
           </template>
@@ -96,7 +96,6 @@ const state: state = reactive({
   taskData: {
     id: "",
     title: "",
-    subTasks: [],
     createdAt: "",
     status: "pending",
   },
@@ -149,6 +148,7 @@ const putUpdatedTask = async (task: Task): Promise<void> => {
   try {
     await updateTask(db.value as IDBDatabase, task);
   } catch (err) {
+    console.log(task);
     console.error(err);
   }
 };
@@ -158,24 +158,6 @@ const rerender = async (): Promise<void> => {
   } catch (error) {
     console.error(error);
   }
-};
-const dragEnd = async () => {
-  for (let i = 0; i < state.fetchedTasks.length; i++) {
-    const task = toRaw(state.fetchedTasks[i]);
-    const reorderedTask = { ...task, order: i + 1 };
-    try {
-      const result = await updateTask(
-        db.value as IDBDatabase,
-        reorderedTask as Task,
-      );
-      console.log(result);
-    } catch (err) {
-      console.error(err);
-    }
-  }
-};
-const onChangeHandler = (event: Event) => {
-  console.log(event);
 };
 
 onMounted(async (): Promise<void> => {
