@@ -123,6 +123,7 @@ const toggleStatus = (event: Event) => {
     ...props.task,
     status: (event.target as HTMLInputElement).checked ? "done" : "pending",
   });
+  // isDone ? (props.task.status = "done") : (props.task.status = "pending");
   isDone.value = !isDone.value;
 };
 const removeTask = async (): Promise<void> => {

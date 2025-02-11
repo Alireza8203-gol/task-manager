@@ -32,15 +32,22 @@
             <div
               class="col-span-2 md:col-span-1 flex justify-end items-center gap-x-4"
             >
-              <button
-                @click="submitDelete"
-                class="btn btn-circle btn-lg shadow-3xl-inner hover:shadow-red-400"
-              >
-                <Icon
-                  class="size-6 text-red-400"
-                  icon="heroicons-outline:trash"
-                />
-              </button>
+              <div class="relative group inline-block">
+                <button
+                  @click="removeAllTasks"
+                  class="btn btn-circle btn-lg shadow-3xl-inner hover:shadow-red-400"
+                >
+                  <Icon
+                    class="size-6 text-red-400"
+                    icon="heroicons-outline:trash"
+                  />
+                </button>
+                <div
+                  class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:flex items-center bg-gray-900 text-white text-sm rounded-lg px-3 py-2 whitespace-nowrap opacity-0 transition-opacity duration-300 delay-1000 group-hover:opacity-100"
+                >
+                  Remove All Tasks
+                </div>
+              </div>
               <button
                 @click="submitTask"
                 class="btn btn-circle btn-lg shadow-3xl-inner hover:shadow-green-400"
@@ -87,7 +94,8 @@ import addTask from "~/composables/addTask";
 import type { state, Task } from "~/types/global";
 import updateTask from "~/composables/updateTask";
 import getAllTasks from "~/composables/getAllTasks";
-import deleteDatabase from "~/composables/deleteDatabase";
+import reorderTasks from "~/composables/reorderTasks";
+import clearAllTasks from "~/composables/clearAllTasks";
 
 const db = ref<IDBDatabase | null>(null);
 const state: state = reactive({
@@ -139,8 +147,14 @@ const sbmtTskByEnter = async (event: Event): Promise<void> => {
     }
   }
 };
-const submitDelete = (): void => {
-  deleteDatabase();
+const removeAllTasks = async (): Promise<void> => {
+  try {
+    const res = await clearAllTasks(db.value as IDBDatabase);
+    await rerender();
+    console.log(res);
+  } catch (error) {
+    console.error(error);
+  }
 };
 const putUpdatedTask = async (task: Task): Promise<void> => {
   try {
@@ -166,6 +180,13 @@ onMounted(async (): Promise<void> => {
     console.log(e);
   }
 });
+
+watch(
+  () => state.fetchedTasks,
+  async () => {
+    await reorderTasks(db.value as IDBDatabase, state.fetchedTasks);
+  },
+);
 </script>
 
 <style scoped></style>
