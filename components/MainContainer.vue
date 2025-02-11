@@ -17,10 +17,8 @@
           Task Title
         </label>
         <div class="mb-4 px-1">
-          <div
-            class="grid grid-cols-7 md:grid-cols-5 items-center justify-between w-full gap-4"
-          >
-            <div class="col-span-5 md:col-span-4">
+          <div class="flex items-center justify-between w-full gap-4">
+            <div class="flex-grow">
               <input
                 type="text"
                 id="taskTitle"

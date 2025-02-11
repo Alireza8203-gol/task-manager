@@ -43,6 +43,5 @@ import { Icon } from "@iconify/vue";
 const colorMode = useColorMode();
 const toggleTheme = (): void => {
   colorMode.preference = colorMode.preference === "light" ? "dark" : "light";
-  console.log(colorMode.preference);
 };
 </script>

@@ -9,7 +9,7 @@
         },
       ]"
     >
-      <div class="flex items-center gap-x-3">
+      <div class="flex items-center w-[90%] gap-x-3 flex-shrink">
         <label
           :for="task.id"
           class="flex items-center justify-center size-5 rounded-sm bg-zinc-500 dark:bg-zinc-800 shadow-sm-middle dark:shadow-lg-middle dark:hover:shadow-amber-400 hover:cursor-pointer transition"
@@ -29,7 +29,7 @@
         </label>
         <span
           :class="[
-            'col-span-3 text-zinc-800 dark:text-white line-clamp-1',
+            'w-[95%] text-zinc-800 dark:text-white line-clamp-2',
             { done: isDone },
           ]"
         >
