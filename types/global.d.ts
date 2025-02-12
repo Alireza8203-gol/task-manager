@@ -6,10 +6,10 @@ interface Task {
   createdAt: string;
   subTasks?: Task[];
 }
-interface state {
+interface State {
   taskData: Task;
-  loading?: boolean;
+  // loading?: boolean;
   fetchedTasks: Task[];
 }
 
-export { Task, state };
+export { Task, State };
