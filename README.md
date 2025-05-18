@@ -54,4 +54,4 @@ This project is licensed under the [MIT License](LICENSE).
 
 ---
 
-💡 *Built with passion and caffeine ☕ by [Your Name]*
+💡 *Built with passion and caffeine ☕ by Alireza :)*
